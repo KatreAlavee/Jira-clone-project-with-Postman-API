@@ -1,0 +1,1793 @@
+{
+	"info": {
+		"_postman_id": "354e4f4e-0c8f-4ec5-bc76-b0c6cd89781d",
+		"name": "jira_clone_comments",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27089756",
+		"_collection_link": "https://orange-resonance-370426.postman.co/workspace/Jira-back-end~a579eef5-aec3-46fc-83d2-56bc79b35bf6/collection/27089756-354e4f4e-0c8f-4ec5-bc76-b0c6cd89781d?action=share&source=collection_link&creator=27089756"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Get authentication token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"token\", jsonData.authToken);\r",
+									"\r",
+									"pm.test(\"Retrieving project information was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/authentication/guest",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"authentication",
+								"guest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get project id into variable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"project_id\", jsonData.project.id);\r",
+									"pm.globals.set(\"user_id1\", jsonData.project.users[0].id);\r",
+									"pm.globals.set(\"user_id2\", jsonData.project.users[1].id);\r",
+									"pm.globals.set(\"user_id3\", jsonData.project.users[2].id);\r",
+									"\r",
+									"pm.test(\"Retrieving project information was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/project",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"project"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get current user id into variable",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"current_user_id\", jsonData.currentUser.id);\r",
+									"\r",
+									"pm.test(\"Retrieving user information was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/currentUser",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"currentUser"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Post issue (Add comment)",
+			"item": [
+				{
+					"name": "Create issue (no auth)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"task\",\r\n    \"title\": \"How is that possible??\",\r\n    \"description\": \"how is that possible????\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"3\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": \"{{project_id}}\",\r\n    \"users\": [\r\n        {\r\n            \"id\": \"{{user_id1}}\"\r\n        },\r\n                {\r\n            \"id\": \"{{user_id2}}\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"issue_id\", jsonData.issue.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that provided information is correct\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"title\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(null);\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"1\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get('current_user_id'));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get('project_id'));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.eql(null);\r",
+									"\tpm.expect(jsonData.issue.timeSpent).to.eql(null);\r",
+									"\tpm.expect(jsonData.issue.timeRemaining).to.eql(null);\r",
+									"\tpm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"\tpm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"\tpm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"bug\",\r\n    \"title\": \"title\",\r\n    \"reporterId\": {{current_user_id}},\r\n    \"priority\": \"1\",\r\n    \"status\": \"backlog\",\r\n    \"projectId\": {{project_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get created issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"console.log(\"We are checking issue \" + pm.globals.get(\"issue_id\"));\r",
+									"\r",
+									"pm.test(\"Get request was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that information was retrieved correctly\", function () {\r",
+									"    pm.expect(jsonData.issue.title).to.eql(\"title\");\r",
+									"    pm.expect(jsonData.issue.type).to.eql(\"bug\");\r",
+									"    pm.expect(jsonData.issue.description).to.eql(null);\r",
+									"    pm.expect(jsonData.issue.status).to.eql(\"backlog\");\r",
+									"    pm.expect(jsonData.issue.priority).to.eql(\"1\");\r",
+									"    pm.expect(jsonData.issue.reporterId).to.eql(pm.globals.get('current_user_id'));\r",
+									"    pm.expect(jsonData.issue.projectId).to.eql(pm.globals.get('project_id'));\r",
+									"\r",
+									"    pm.expect(jsonData.issue.estimate).to.eql(null);\r",
+									"\tpm.expect(jsonData.issue.timeSpent).to.eql(null);\r",
+									"\tpm.expect(jsonData.issue.timeRemaining).to.eql(null);\r",
+									"\tpm.expect(jsonData.issue.createdAt).to.not.be.null;\r",
+									"\tpm.expect(jsonData.issue.updatedAt).to.not.be.null;\r",
+									"\tpm.expect(jsonData.issue.listPosition).to.not.be.null;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add comment for created issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that comment is added\", function () {\r",
+									"    pm.expect(jsonData.comment.body).to.eql(\"Added comment by Katre\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Added comment by Katre\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{current_user_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add another comment for same issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"comment_id_2\", jsonData.comment.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that comment is added\", function () {\r",
+									"    pm.expect(jsonData.comment.body).to.eql(\"Another comment added by Katre\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjUsImlhdCI6MTY2MTg4ODg2NSwiZXhwIjoxNjc3NDQwODY1fQ.xBCXkyIvbEe6yW1l079gPqZjt0indGDLBvyUG9n_0es",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Another comment added by Katre\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{current_user_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get issue by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "IssueId",
+								"value": "1648109",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/issues/{{issue_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"issues",
+								"{{issue_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add comment for created issue (required fields missing)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"All mandatory fields are listed in fields block\", function () {\r",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");\r",
+									"    pm.expect(jsonData.error.data.fields).to.have.keys('body', 'issueId', 'userId');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add comment for created issue (symbols in text field)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that comment is added\", function () {\r",
+									"    pm.expect(jsonData.comment.body).to.eql(\"Added comment with symbols &%€#§$}©@£{\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Added comment with symbols &%€#§$}©@£{\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{current_user_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add comment for created issue (numbers)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that comment is added\", function () {\r",
+									"    pm.expect(jsonData.comment.body).to.eql(\"99999999999999\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"99999999999999\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{current_user_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Put issue (Update comment)",
+			"item": [
+				{
+					"name": "Add comment for created issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that comment is added\", function () {\r",
+									"    pm.expect(jsonData.comment.body).to.eql(\"New comment by Katre\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"New comment by Katre\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{current_user_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);",
+									"",
+									"pm.test(\"Issue creation was successful\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check that comment is updated\", function () {",
+									"    pm.expect(jsonData.comment.body).to.eql(\"Updated new version of New comment by Katre\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Updated new version of New comment by Katre\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update comment (non-existing id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Correct error code is shown\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error message is correct\", function () {",
+									"pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");",
+									"pm.expect(jsonData.error.message).to.eql(\"Comment not found.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Trying to update comment with non-existing id\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/6754324",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"6754324"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Comment deletion was successful\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get issue comment by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Correct error code is returned\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"pm.expect(jsonData.error.code).to.eql(\"ROUTE_NOT_FOUND\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "IssueId",
+								"value": "1648109",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update non-existing comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Correct error code is shown\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error message is correct\", function () {",
+									"pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");",
+									"pm.expect(jsonData.error.message).to.eql(\"Comment not found.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Trying to update deleted comment\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Put comments (verify mandatory fields)",
+			"item": [
+				{
+					"name": "Add comment for created issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that comment is added\", function () {\r",
+									"    pm.expect(jsonData.comment.body).to.eql(\"New new new comment by Katre\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"New new new comment by Katre\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{current_user_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update comment (numbers in body)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);",
+									"",
+									"pm.test(\"Issue creation was successful\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check that comment is updated\", function () {",
+									"    pm.expect(jsonData.comment.body).to.eql(\"99999999999999999999999999999999999999999999999999999999999\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"99999999999999999999999999999999999999999999999999999999999\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update comment (symbols in body)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);",
+									"",
+									"pm.test(\"Issue creation was successful\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check that comment is updated\", function () {",
+									"    pm.expect(jsonData.comment.body).to.eql(\"#€%&/()(/&%€#€%&/&%€#€%&/&%€#€%&/(/&%€#€%&/&%€%&/&%€\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"#€%&/()(/&%€#€%&/&%€#€%&/&%€#€%&/(/&%€#€%&/&%€%&/&%€\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update comment (Cyrillic letters in body)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);",
+									"",
+									"pm.test(\"Issue creation was successful\", function () {",
+									"    pm.response.to.not.be.error;",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check that comment is updated\", function () {",
+									"    pm.expect(jsonData.comment.body).to.eql(\"гггууурррррццццмммлллллыыттттющщщщщщщщщэээээ\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"гггууурррррццццмммлллллыыттттющщщщщщщщщэээээ\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update comment (empty body)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Correct error code is returned\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"All mandatory fields are listed in fields block\", function () {",
+									"    pm.expect(jsonData.error.code).to.eql(\"BAD_USER_INPUT\");",
+									"    pm.expect(jsonData.error.data.fields).to.have.keys('body', 'issueId', 'userId');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update comment (no auth)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Correct error code is returned\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test(\"Correct error message is recieved\", function () {",
+									"    pm.expect(jsonData.error.code).to.eql(\"INVALID_TOKEN\");",
+									"    pm.expect(jsonData.error.message).to.eql(\"Authentication token not found.\")",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update comment (non-existing id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Correct error code is shown\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error message is correct\", function () {",
+									"pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");",
+									"pm.expect(jsonData.error.message).to.eql(\"Comment not found.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Trying to update comment with non-existing id\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments/9999999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"9999999"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete issue",
+			"item": [
+				{
+					"name": "Add comment for created issue",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.globals.set(\"comment_id\", jsonData.comment.id);\r",
+									"\r",
+									"pm.test(\"Issue creation was successful\", function () {\r",
+									"    pm.response.to.not.be.error;\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check that comment is added\", function () {\r",
+									"    pm.expect(jsonData.comment.body).to.eql(\"Adding new comment for deletion tests\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"body\": \"Adding new comment for deletion tests\",\r\n    \"issueId\": {{issue_id}},\r\n    \"userId\": {{current_user_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete comment (non-existing  id)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Correct error code is shown\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error message is correct\", function () {",
+									"pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");",
+									"pm.expect(jsonData.error.message).to.eql(\"Comment not found.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments/999999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"999999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete comment (id with more than 10 digits)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Correct error code is shown\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Error message is correct\", function () {",
+									"pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");",
+									"pm.expect(jsonData.error.message).to.eql(\"Comment not found.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments/12345678901",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"12345678901"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Issue deletion was successful\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete the same comment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Check that non-existing comment can't be deleted\", function () {",
+									"pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Correct error message is presented in the block\", function () {",
+									"pm.expect(jsonData.error.code).to.eql(\"ENTITY_NOT_FOUND\");",
+									"pm.expect(jsonData.error.message).to.eql(\"Comment not found.\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYwNjA2MiwiaWF0IjoxNjk0ODYxMjMzLCJleHAiOjE3MTA0MTMyMzN9.0OqlZtmtHNM0c4fok7AGkLTRPg3Yn116ouj29SfQ29c",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/comments/{{comment_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"comments",
+								"{{comment_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://jira-api.ivorreic.com",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "AUTH_TOKEN",
+			"type": "string"
+		}
+	]
+}
